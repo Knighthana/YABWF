@@ -144,9 +144,9 @@ boa -c /usr/local/boa
 
 编译机上的交叉编译器安装在`/opt/crosscompilers/OEMSoCMark`中
 
-其中，`gcc`的路径为`/opt/crosscompilers/OEMSoCMark/bin/arm-oem-linux-gnueabihf-gcc`
+其中，`gcc`的路径为`/opt/crosscompilers/OEMSoCMark/bin/arm-linux-gnueabihf-gcc`
 
-`ld`的路径为`/opt/crosscompilers/OEMSoCMark/bin/arm-oem-linux-gnueabihf-ld`
+`ld`的路径为`/opt/crosscompilers/OEMSoCMark/bin/arm-linux-gnueabihf-ld`
 
 服务器上用于中转文件的目录为`/pack`
 
@@ -159,7 +159,7 @@ boa -c /usr/local/boa
 然后以如下方式调用`construct.sh`
 
 ```shell
-RUNPREFIXDIR=/opt/userapp BUILDMACHINE=amd64 HOST=/opt/crosscompilers/OEMSoCMark/bin/arm-oem-linux-gnueabihf TRANSFERDIR=/pack ./construct.sh
+PATH=$PATH:/opt/crosscompilers/OEMSoCMark/bin RUNPREFIXDIR=/opt/userapp BUILDMACHINE=amd64 HOST=arm-linux-gnueabihf TRANSFERDIR=/pack ./construct.sh
 ```
 
 那么就可以在`/pack`下看到`opt`目录
