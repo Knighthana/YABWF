@@ -1,6 +1,7 @@
 # Brief: git ignore file 
 # Version: docv1.0.0 2024/01/07
 # Author: Knighthana (https://github.com/Knighthana)
+# as-is: https://github.com/Knighthana/YABWF
 
 # the default build-out path `out/`
 /out

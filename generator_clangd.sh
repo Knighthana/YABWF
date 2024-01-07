@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-# make clangd understand the situation
+# Brief: make clangd understand the situation
+# Author: Knighthana (https://github.com/Knighthana)
+# Version: docv1.0.0
+# Date: 2024/01/07
+# any problem please make an issue on https://github.com/Knighthana/YABWF
 
 PROJECT_PATH=$(dirname $0)
 cd $PROJECT_PATH

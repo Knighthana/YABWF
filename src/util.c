@@ -135,6 +135,7 @@ char *new_clean_pathname(char *pathname)
  * date: 2023-11-17
  * updator: Knighthana
  * this used too much sprintf format, might be slower?
+ * any improve suggestion sendto (https://github.com/Knighthana/YABWF)
  */
 char *get_commonlog_time(void)
 {

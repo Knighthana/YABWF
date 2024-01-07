@@ -4,7 +4,7 @@
 # Author: Knighthana (https://github.com/Knighthana)
 # Version: docv1.0.0
 # Date: 2024/01/07
-# any problem please make an issue on https://github.com/Knighthana/yabwf
+# any problem please make an issue on https://github.com/Knighthana/YABWF
 
 # directory
 cd $(dirname "$0")
