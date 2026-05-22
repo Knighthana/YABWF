@@ -6,8 +6,6 @@ updated: 2026-05-23
 YABWF - Yet Another Boa Webserver Fork
 ======================================
 
-yabwf README docv1.0.0 [Knighthana](https://github.com/Knighthana) 2024/01/07
-
 Wish to talk about this project? feel fee to contact at [Yet Another Boa Webserver Fork](https://github.com/Knighthana/YABWF)
 
 ## Sincere thanks to the Boa Webserver project contributors!
@@ -44,23 +42,12 @@ Thanks to Larry Doolittle and Jon Nelson and other generous good people for crea
 
 ### 已提前告知信息安全问题
 
-请注意，已经有报告指出Boa服务器存在一些**安全漏洞**。以下为YABWF对各CVE的处理状态：
+请注意，已经有报告指出Boa服务器存在一些**安全漏洞**。
 
-| CVE | 状态 | 说明 |
-|-----|------|------|
-| CVE-2000-0920 | ✅ 基线已安全 | `clean_pathname` 阻断了 `%2E` 目录穿越 |
-| CVE-2005-0864 | ✅ 基线已安全 | `boa_atoi` 拒绝负值 Content-Length |
-| CVE-2007-4915 | ⬜ 不适用 | Intersil isl3893 厂商扩展代码，YABWF 无此路径 |
-| CVE-2009-4496 | ✅ 已修复（0.0.2） | 日志控制字符过滤（`sanitize_log_string`） |
-| CVE-2016-9564 | ✅ 基线已安全 | 未发现 use-after-free 路径 |
-| CVE-2019-7384 | ⬜ 不适用 | Raisecom GPON 厂商定制 CGI handler，YABWF 无此路径 |
-| CVE-2019-9976 | ✅ 基线已安全 | POST 临时文件使用 `mkstemp` + `unlink`，不持久化 |
-| CVE-2021-35395 | ⬜ 不适用 | Realtek SDK 厂商定制 CGI handler，YABWF 无此路径 |
-| CVE-2023-7208 | ⬜ 不适用 | Totolink 厂商定制 CGI handler，YABWF 无此路径 |
+YABWF 对各 CVE 的处理状态详见 [SECURITY.md](SECURITY.md)。
+当前已修复 1 项，基线已安全 4 项，厂商专属不适用 4 项。
 
-详细分析见 `user_memo/future/CVE_ANALYSIS.md`。
-
-尽管上述 CVE 已处理，YABWF 仍然是一个面向嵌入式/内网场景的轻量服务器，
+尽管已知 CVE 已处理，YABWF 仍然是一个面向嵌入式/内网场景的轻量服务器，
 请在公开服务器上使用时自行评估风险。对此已经提前告知，若有造成损失概不负责。
 
 ### 若继续则默认为赞同免责声明
@@ -367,4 +354,4 @@ or visit the Boa homepage at
 # README DOCUMENT CHANGELOG
 
 2024/01/07 1.0.0 简单介绍项目本身
-2026/05/23 1.0.1 
+2026/05/23 1.0.1 针对自定义功能和修复漏洞进行更新
