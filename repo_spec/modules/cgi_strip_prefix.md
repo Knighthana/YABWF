@@ -1,7 +1,7 @@
 ---
 Status: draft
 Authority: reference-only
-Read-Tier: on-demand
+Read-Tier: task-scoped
 Purpose: CGI 输出前缀剥离功能设计方案——自动丢弃 CGI 程序在有效 HTTP 头之前输出的调试/日志内容
 version: knighthana@0.2.0
 last_update: 2026-05-23

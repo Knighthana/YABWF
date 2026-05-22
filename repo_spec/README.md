@@ -92,6 +92,7 @@ last_update: <date>
 | poll | `src/poll.c` | `repo_spec/modules/event_loop.md` | L4 |
 | access | `src/access.c` | `repo_spec/modules/access.md` | L4 |
 | index_dir | `src/index_dir.c` | `repo_spec/modules/index_dir.md` | 工具 |
+| cgi_strip_prefix | `src/cgi_header.c`（子功能） | `repo_spec/modules/cgi_strip_prefix.md` | L2 |
 
 层级定义参见 `repo_memo/global/PATTERNS_ENGINEERING.md` 层级划分表。
 
