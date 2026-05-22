@@ -376,16 +376,21 @@ int main(int argc, char *argv[])
     timeptr = gmtime(&timep);
 #endif
     now = strdup(asctime(timeptr));
+    if (!now) {
+        return -1;
+    }
     now[strlen(now) - 1] = '\0';
 #ifdef USE_LOCALTIME
     printf("</table>\n<hr noshade>\nIndex generated %s %s\n"
-           "<!-- This program is part of the Boa Webserver Copyright (C) 1991-2002 http://www.boa.org -->\n"
+           "<!-- This program is part of the YABWF project -->\n"
            "</body>\n</html>\n", now, TIMEZONE(timeptr));
 #else
     printf("</table>\n<hr noshade>\nIndex generated %s UTC\n"
-           "<!-- This program is part of the Boa Webserver Copyright (C) 1991-2002 http://www.boa.org -->\n"
+           "<!-- This program is part of the YABWF project -->\n"
            "</body>\n</html>\n", now);
 #endif
+    free(now);
+    return 0;
 
     return 0;
 }
