@@ -1,5 +1,6 @@
 # Brief: git ignore file 
-# Version: docv1.0.0 2024/01/07
+# Created: docv1.0.0 2024/01/07
+# Updated: docv1.0.1 2026/05/23
 # Author: Knighthana (https://github.com/Knighthana)
 # as-is: https://github.com/Knighthana/YABWF
 
@@ -30,6 +31,9 @@
 /docs/config.h
 /docs/Makefile
 /docs/config.log
+
+# GUN autotools
+/autom4te.cache/
 
 # clangd config file
 # I suggest that to use the `generator_clangd.sh` to generate it on each machine
