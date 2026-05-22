@@ -721,6 +721,7 @@ enable_option_checking
 enable_profiling
 enable_gunzip
 enable_access_control
+enable_cgi_strip_prefix
 enable_debug
 enable_verbose
 with_dmalloc
@@ -1361,6 +1362,7 @@ Optional Features:
   --enable-profiling      Compile and link profiling code
   --disable-gunzip        Disable use of gunzip
   --enable-access-control Enable support for allow/deny rules
+  --enable-cgi-strip-prefix  Enable CGI output prefix stripping
   --disable-debug         Do not compile and link debugging code
   --disable-verbose       Do not enable verbose/debug logging
   --disable-sendfile      Disable the use of the sendfile(2) system call
@@ -5573,6 +5575,29 @@ printf "%s\n" "no" >&6; }
 
 fi
 
+
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether to enable CGI Strip Prefix support" >&5
+printf %s "checking whether to enable CGI Strip Prefix support... " >&6; }
+# Check whether --enable-cgi-strip-prefix was given.
+if test ${enable_cgi_strip_prefix+y}
+then :
+  enableval=$enable_cgi_strip_prefix;
+  if test "$enableval" = "yes" ; then
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+    CFLAGS="$CFLAGS -DCGI_STRIP_PREFIX"
+  else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+  fi
+
+else $as_nop
+
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+fi
 
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether to compile and link debugging code" >&5

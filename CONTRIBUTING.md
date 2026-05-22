@@ -1,6 +1,6 @@
 # Contributing to YABWF
 
-Thank you for your interest in YABWF (Yet Another Boa Web Framework) — a lightweight, single-process HTTP server for embedded Linux systems.
+Thank you for your interest in YABWF (Yet Another Boa Web Fork) — a lightweight, single-process HTTP server for embedded Linux systems.
 
 This document outlines the workflow, standards, and expectations for contributing.
 

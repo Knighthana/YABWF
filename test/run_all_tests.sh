@@ -76,11 +76,37 @@ echo ""
 # ============================================================
 # 5. Security PoC: CGI Location header validation
 # ============================================================
-echo "--- [5/5] Security PoC: CGI Location Header ---"
+echo "--- [5/7] Security PoC: CGI Location Header ---"
 if ./test/security/test_poc_cgi_header_location.sh 2>&1; then
     echo ">>> PASS: CGI Location security PoC"
 else
     echo ">>> FAIL: CGI Location security PoC"
+    ANY_FAIL=1
+fi
+echo ""
+
+# ============================================================
+# 6. Unit test: CGI Strip Prefix
+# ============================================================
+echo "--- [6/7] Unit Test: CGI Strip Prefix ---"
+if gcc -Wall -Wextra -std=c99 -DSTANDALONE_TEST -o /tmp/test_cgi_strip_prefix \
+    test/unit/test_cgi_strip_prefix.c 2>&1 &&
+   /tmp/test_cgi_strip_prefix; then
+    echo ">>> PASS: CGI Strip Prefix unit test"
+else
+    echo ">>> FAIL: CGI Strip Prefix unit test"
+    ANY_FAIL=1
+fi
+echo ""
+
+# ============================================================
+# 7. Integration test: CGI Strip Prefix
+# ============================================================
+echo "--- [7/7] Integration Test: CGI Strip Prefix ---"
+if ./test/integration/test_cgi_strip_prefix.sh 2>&1; then
+    echo ">>> PASS: CGI Strip Prefix integration test"
+else
+    echo ">>> FAIL: CGI Strip Prefix integration test"
     ANY_FAIL=1
 fi
 echo ""

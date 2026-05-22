@@ -21,6 +21,7 @@
 
 #include "boa.h"
 
+#ifdef CGI_STRIP_PREFIX
 /* CGI strip prefix globals */
 int cgi_strip_prefix = 0;           /* CGIStripPrefix: 0=off, 1=on */
 char **cgi_strip_tokens = NULL;     /* dynamic token array */
@@ -289,6 +290,7 @@ char *strip_cgi_prefix(char *buf)
         }
     }
 }
+#endif
 
 /* process_cgi_header
 
@@ -327,6 +329,7 @@ int process_cgi_header(request * req)
 
     buf = req->header_line;
 
+#ifdef CGI_STRIP_PREFIX
     if (cgi_strip_prefix && req->cgi_type != NPH) {
         char *stripped = strip_cgi_prefix(buf);
         if (stripped != buf) {
@@ -335,6 +338,7 @@ int process_cgi_header(request * req)
             buf = stripped;
         }
     }
+#endif
 
     c = strstr(buf, "\n\r\n");
     if (c == NULL) {

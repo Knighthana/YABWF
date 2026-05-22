@@ -284,4 +284,11 @@ extern sigjmp_buf env;
 extern int handle_sigbus;
 extern unsigned int cgi_umask;
 
+#ifdef CGI_STRIP_PREFIX
+/* CGI strip prefix */
+extern int cgi_strip_prefix;
+extern char **cgi_strip_tokens;
+extern int cgi_strip_token_count;
+#endif
+
 #endif

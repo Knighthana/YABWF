@@ -85,7 +85,9 @@ static void c_add_mime_types_file(char *v1, char *v2, void *t);
 static void c_add_mime_type(char *v1, char *v2, void *t);
 static void c_add_alias(char *v1, char *v2, void *t);
 static void c_add_access(char *v1, char *v2, void *t);
+#ifdef CGI_STRIP_PREFIX
 static void c_set_cgi_strip_token(char *v1, char *v2, void *t);
+#endif
 
 struct ccommand {
     const char *name;
@@ -168,8 +170,10 @@ struct ccommand clist[] = {
     {"CGINice", S2A, c_set_int, &cgi_nice},
 #endif
     {"CGIEnv", S2A, c_add_cgi_env, NULL},
+#ifdef CGI_STRIP_PREFIX
     {"CGIStripPrefix", S0A, c_set_unity, &cgi_strip_prefix},
     {"CGIStripToken", S1A, c_set_cgi_strip_token, NULL},
+#endif
 };
 
 static void c_add_cgi_env(char *v1, char *v2, void *t)
@@ -373,6 +377,7 @@ static void c_add_access(char *v1, char *v2, void *t)
 #endif                          /* ACCESS_CONTROL */
 }
 
+#ifdef CGI_STRIP_PREFIX
 static void c_set_cgi_strip_token(char *v1, char *v2, void *t)
 {
     cgi_strip_add_token(v1);
@@ -383,6 +388,7 @@ static void c_set_cgi_strip_token(char *v1, char *v2, void *t)
                 v1);
     }
 }
+#endif
 
 struct ccommand *lookup_keyword(char *c)
 {
