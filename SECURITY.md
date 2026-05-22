@@ -22,8 +22,10 @@ YABWF 面向嵌入式/内网场景，不适用于公开互联网部署。
 | CVE-2021-35395 | ⬜ 不适用 | Realtek SDK 厂商定制 CGI handler，YABWF 无此路径 |
 | CVE-2023-7208 | ⬜ 不适用 | Totolink 厂商定制 CGI handler，YABWF 无此路径 |
 | CVE-2024-40088 | ⬜ 不适用 | Vilo 5 Mesh WiFi 厂商设备固件，非上游 Boa |
+| CVE-2025-7909 | ⬜ 不适用 | D-Link DIR-513 厂商定制 CGI handler（**EOL 设备，Unsupported When Assigned**） |
 | CVE-2025-7910 | ⬜ 不适用 | D-Link DIR-513 厂商定制 CGI handler（**EOL 设备，Unsupported When Assigned**） |
 | CVE-2025-8757 | ⬜ 不适用 | TRENDnet TV-IP110WN 嵌入式设备，需本地访问 |
+| CVE-2026-1687 | ⬜ 不适用 | Tenda HG10 `/boaform/formSamba` 厂商定制 CGI handler |
 
 **状态说明**：
 - ✅ 已修复：该 CVE 在 YABWF 中已通过代码修改修复
