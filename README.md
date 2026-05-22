@@ -45,7 +45,7 @@ Thanks to Larry Doolittle and Jon Nelson and other generous good people for crea
 请注意，已经有报告指出Boa服务器存在一些**安全漏洞**。
 
 YABWF 对各 CVE 的处理状态详见 [SECURITY.md](SECURITY.md)。
-当前已修复 1 项，基线已安全 4 项，厂商专属不适用 4 项。
+当前已修复 1 项，基线已安全 4 项，厂商专属不适用 8 项，另有 3 项待审查。
 
 尽管已知 CVE 已处理，YABWF 仍然是一个面向嵌入式/内网场景的轻量服务器，
 请在公开服务器上使用时自行评估风险。对此已经提前告知，若有造成损失概不负责。
