@@ -1,18 +1,23 @@
 ** Changes in YABWF 0.0.2 (2026-05-23)
  * 建立 Doc/SPEC/TEST 文档基础设施（repo_spec/ repo_test/ test/）
  * 修复 CVE-2009-4496: 日志控制字符过滤（sanitize_log_string）
+ * 修复 CVE-2022-45956: HEAD 方法绕过 Allow/Deny（process_header_end 统一 access_allow）
+ * 修复 CVE-2018-21028: scandir.c malloc 检查 + index_dir.c strdup 泄漏 + strutil.c 优化
  * 确认 CVE-2019-9976 / 2000-0920 / 2005-0864 / 2016-9564 已在基线中修复
- * 归档厂商专属 CVE: 2007-4915 / 2019-7384 / 2021-35395 / 2023-7208
+ * 确认 CVE-2024-47916: 路径穿越防御链已验证安全
+ * 归档厂商专属/已争议 CVE: 2007-4915 / 2017-9833 / 2019-7384 / 2021-33558 /
+ *   2021-35395 / 2023-7208 / 2024-40088 / 2025-7909 / 2025-7910 / 2025-8757 / 2026-1687
  * cgi_header.c: Location 头仅接受 http:// 和 https:// URL，拒绝绝对路径
  * hash.c: 明确 four_char_hash 运算符优先级
  * get_commonlog_time: ENABLE_LOG_COLOR 编译选项 + isatty 运行时检测
  * 新增 CGIStripPrefix 功能（可选编译），自动剥离 CGI 调试输出
  * defines.h: 新增 LOG_SANITIZE_BUF_SIZE（默认 2048），用户可按需调整
- * 新增 CONTRIBUTING.md、CONFIGURE_OPTIONS.md 等文档
+ * 日志前缀 "boa:" → "yabwf:"
+ * 新增 CONTRIBUTING.md、SECURITY.md、CONFIGURE_OPTIONS.md 等文档
  * 更新 config.sub (2003→2025) 和 config.guess (2003→2021) 支持新架构
  * construct.sh 新增 verify-cross 子命令
  * generator_clangd.sh 改为生成 compile_commands.json
- * 新增单元测试、集成测试、安全 PoC 测试套件
+ * 新增单元测试、集成测试、安全 PoC 测试套件（8 组）
 
 ** Changes from boa 0.94.14 to yabwf 0.0.1
  * add function for env `LD_LIBRARY_PATH`

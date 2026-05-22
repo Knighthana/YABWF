@@ -1,18 +1,23 @@
 ---
-version: 1.0.1
-updated: 2026-05-23
+Applicable-to: human-only
+Authority: reference-only
+Purpose: 向人类介绍这个项目
+Read-Tier: on-demand
+Status: active
+Updated: 2026-05-23
+Version: 1.0.1
 ---
 
 YABWF - Yet Another Boa Webserver Fork
 ======================================
 
-Wish to talk about this project? feel fee to contact at [Yet Another Boa Webserver Fork](https://github.com/Knighthana/YABWF)
+Wish to talk about this project? feel free to contact at [Yet Another Boa Webserver Fork](https://github.com/Knighthana/YABWF)
 
 ## Sincere thanks to the Boa Webserver project contributors!
 
 Thanks to Larry Doolittle and Jon Nelson and other generous good people for creating the Boa Webserver project!
 
-[Boa Webserver](http://http://www.boa.org/)
+[Boa Webserver](http://www.boa.org/)
 
 [Boa SourceForge Page](https://sourceforge.net/projects/boa/)
 
@@ -26,6 +31,15 @@ Thanks to Larry Doolittle and Jon Nelson and other generous good people for crea
 
 以与原项目、开发成员进行区分，以及方便后续的版本号更迭等操作
 
+### 与原始 Boa 的主要区别
+
+- **安全加固**：20 项已知 CVE 已评估，3 项已修复（详见 [SECURITY.md](SECURITY.md)）
+- **CGI 输出过滤**：可选的 CGI 调试信息自动剥离
+- **日志安全**：控制字符过滤，防 ANSI 转义注入
+- **交叉编译**：更新 config.sub/guess 至最新版，支持 aarch64 等新架构
+- **编译期可选特性**：ACCESS_CONTROL、CGI_STRIP_PREFIX 等可按需启用，零开销
+- **文档体系**：SPEC 驱动开发，完整的测试套件
+
 ## 免责声明
 
 ### 代码公开过程没有任何隐含的赞同、支持行为
@@ -37,8 +51,6 @@ Thanks to Larry Doolittle and Jon Nelson and other generous good people for crea
 公开源代码完全出于**遵守GPL**以及**学习交流**的目的
 
 不保证任何对代码文件或文档文件无论未修改、或修改后投入生产环境后的任何行为，不对造成的任何损失负责
-
-不认同、不许可任何利用此项目代码或文档进行或参与任何违德、非法、反人类活动的行为
 
 ### 已提前告知信息安全问题
 
@@ -116,6 +128,20 @@ YABWF 对各 CVE 的处理状态详见 [SECURITY.md](SECURITY.md)。
 
 默认值为自动获取到的CPU线程数最大值，假如实际情况不允许这么做，请手动指定其它数字
 
+#### 进阶编译选项
+
+除了通过环境变量控制 `construct.sh` 的行为外，`./configure` 本身也提供编译期特性开关。
+
+完整列表见 [CONFIGURE_OPTIONS.md](repo_memo/CONFIGURE_OPTIONS.md)，常用选项包括：
+
+| 选项 | 默认 | 说明 |
+|------|------|------|
+| `--enable-cgi-strip-prefix` | no | 自动剥离 CGI 调试输出 |
+| `--enable-access-control` | no | Allow/Deny 访问控制 |
+| `--enable-log-color` | yes | 日志时间戳 ANSI 颜色（终端可见） |
+
+也可以直接调用 `./configure --help` 查看所有选项。
+
 ### 编译与预安装举例
 
 #### 1. 背景假设
@@ -137,6 +163,15 @@ YABWF 对各 CVE 的处理状态详见 [SECURITY.md](SECURITY.md)。
 #### 2. 编译与预安装
 
 在前述背景下，应当以如下方式调用`construct.sh`：
+
+1. 在没有目标硬件的情况下快速验证架构支持，以aarch64为例：
+
+```shell
+HOST=aarch64-linux-gnu ./construct.sh verify-cross
+```
+只做`./configure --host=$HOST && make`，输出编译产物路径和大小即退出。
+
+2. 实际编译：
 
 ```shell
 PATH=$PATH:/opt/crosscompilers/OEM-SoC/bin RUNPREFIXDIR=/opt/userapp BUILDMACHINE=amd64 HOST=arm-linux-gnueabihf TRANSFERDIR=/pack ./construct.sh
@@ -194,7 +229,7 @@ cp -rf ./* /
 通过shell执行
 
 ```shell
-/opt/userapp/bin/boa -c /opt/userapp/etc/boa
+/opt/userapp/bin/boa -c /opt/userapp/etc/boa # 目前二进制文件名仍为boa
 ```
 
 以运行服务器
@@ -216,7 +251,7 @@ cp -rf ./* /
 假如将配置文件`boa.conf`放在了`/usr/local/boa`中，那么就可以通过
 
 ```shell
-boa -c /usr/local/boa
+boa -c /usr/local/boa # 目前二进制文件名仍然为`boa`
 ```
 
 运行服务器
@@ -253,6 +288,11 @@ boa -c /usr/local/boa
 
 此时前端可以在网页JavaScript中直接通过`POST`、`GET`、`PUT`、`DELETE`等方法调用`/cgi-bin/account.cgi`，达到直接调用`/var/undermonitor/viatcp/account.cgi`的效果
 
+### 0.0.2 新增配置项
+
+`CGIStripPrefix On|Off` 启用后自动剥离 CGI 程序在 HTTP 头之前输出的调试信息（需编译时启用 `--enable-cgi-strip-prefix`，默认关闭）
+`CGIStripToken <token>` 向剥离白名单添加自定义 HTTP 头名（可重复使用）
+
 ### 配置文件读取过程的自定义
 
 项目二进制程序寻找配置文件使用的路径与文件名在`src/defines.h`中进行了定义
@@ -285,19 +325,28 @@ boa -c /usr/local/boa
 
 来指定MIME文件的位置，不过默认情况下完全可以在`boa.conf`中指定MIME的位置，因此这是不必要且不建议的
 
+## 运行测试
+
+项目在`test/`中提供了三层测试套件：
+```shell
+./test/run_all_tests.sh    # 运行全部测试
+```
+
+测试覆盖：单元测试（纯函数逻辑）、集成测试（HTTP 端到端）、安全测试（CVE 回归）。
+
 ## 常见问题
 
 ### 静默退出，shell得到返回值`1`
 
-对于使用了默认`boa.conf`的用户来说，看不到报错是因为报错被放入了日志文件中
+对于使用了`boa.conf`并指定了日志路径的用户来说，看不到报错是因为报错被放入了日志文件中
 
-对于这种情况，日志（默认位于`/tmp/yabwferr.log`）中会写明原因
+对于这种情况，检查对应路径的日志获取报错信息，比如使用`examples/boa.conf`则位于`/tmp/yabwferr.log`中的日志会写明原因
 
 一种常见的原因是`boa`无法绑定TCP端口，日志中写作`unable to bind: ******`
 
 `Permission denied`: Linux操作系统中，小于`1024`的TCP端口需要提供`root`级别的权限才能绑定，需要切换用户或者使用`sudo`一类的工具再启动`boa`
 
-`Address already in use`: 端口被占用，有可能是之前启动的`yabwf`进程占用了端口，或者其他的什么进程占用了这个tcp端口，使用`lsof -i:端口号`或者`netstatu -tlp | grep 端口号`来查找
+`Address already in use`: 端口被占用，有可能是之前启动的`yabwf`进程占用了端口，或者其他的什么进程占用了这个tcp端口，使用`lsof -i:端口号`或者`netstat -tlp | grep 端口号`来查找
 
 ### Could not chdir to "/etc/boa": aborting
 
@@ -306,7 +355,7 @@ boa -c /usr/local/boa
 参考上文，解决方案有三种
 
 1. 使用`-c`选项指定配置文件所在的路径；
-2. 在`/etc`中新建`boa`目录，放入`boa.conf`文件夹；
+2. 在`/etc`中新建`boa`目录，放入`boa.conf`文件；
 3. 修改源代码，重新指定默认的配置文件
 
 建议使用第一种方法解决
@@ -325,7 +374,7 @@ boa -c /usr/local/boa
 
 其最后一次更新是在2005年，可能有部分新架构并未收录，因此并非所有的架构都受到原本`boa`代码的支持
 
-如有需要，可以前往修改`config.sub`，强行使编译通过
+如仍有新架构不识别，可手动更新或者修改`config.sub`
 
 由于`Boa Webserver`仅仅依赖C标准库，根据之前的测试，其在`glibc`与`uclibc`中均能正常工作，可以推测在其它支持C标准库的平台上也能正常工作
 
@@ -354,4 +403,4 @@ or visit the Boa homepage at
 # README DOCUMENT CHANGELOG
 
 2024/01/07 1.0.0 简单介绍项目本身
-2026/05/23 1.0.1 针对自定义功能和修复漏洞进行更新
+2026/05/23 1.0.1 0.0.2 版本发布：3 项 CVE 修复 + 文档基础设施 + CGI Strip + 测试套件
