@@ -171,6 +171,7 @@ void sigterm_stage2_run(void)
             (int) (current_time - start_time));
     chdir(tempdir);
     clear_common_env();
+    cgi_strip_cleanup();
     dump_mime();
     dump_passwd();
     dump_alias();

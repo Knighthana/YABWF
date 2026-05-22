@@ -84,6 +84,14 @@ int main(int argc, char *argv[])
     fixup_server_root();
     read_config_files();
     create_common_env();
+
+    /* Only build the builtin token table if CGI strip prefix is enabled.
+     * Skipping the call when cgi_strip_prefix is 0 avoids ~1-2 KB of
+     * heap allocation that would never be used at runtime.
+     */
+    if (cgi_strip_prefix)
+        cgi_strip_init();
+
     open_logs();
     server_s = create_server_socket();
     init_signals();

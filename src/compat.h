@@ -143,6 +143,17 @@ char *strdup(char *s);
 #define TIMEZONE(foo) *tzname
 #endif
 
+/* strncasecmp is POSIX (IEEE Std 1003.1-2001).
+ * All supported platforms provide it via <strings.h> or <string.h>.
+ * No fallback is needed — the configure script may define
+ * HAVE_STRNCASECMP for platforms where it is known to exist.
+ * If you are porting to a platform that lacks it, add a
+ * HAVE_STRNCASECMP guard and a fallback in extras/strutil.c.
+ */
+#ifndef HAVE_STRNCASECMP
+int strncasecmp(const char *s1, const char *s2, size_t n);
+#endif
+
 #ifdef HAVE_LIBDMALLOC
 #define DMALLOC_FUNC_CHECK
 #include <dmalloc.h>

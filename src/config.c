@@ -85,6 +85,7 @@ static void c_add_mime_types_file(char *v1, char *v2, void *t);
 static void c_add_mime_type(char *v1, char *v2, void *t);
 static void c_add_alias(char *v1, char *v2, void *t);
 static void c_add_access(char *v1, char *v2, void *t);
+static void c_set_cgi_strip_token(char *v1, char *v2, void *t);
 
 struct ccommand {
     const char *name;
@@ -167,6 +168,8 @@ struct ccommand clist[] = {
     {"CGINice", S2A, c_set_int, &cgi_nice},
 #endif
     {"CGIEnv", S2A, c_add_cgi_env, NULL},
+    {"CGIStripPrefix", S0A, c_set_unity, &cgi_strip_prefix},
+    {"CGIStripToken", S1A, c_set_cgi_strip_token, NULL},
 };
 
 static void c_add_cgi_env(char *v1, char *v2, void *t)
@@ -368,6 +371,17 @@ static void c_add_access(char *v1, char *v2, void *t)
             "This version of Boa doesn't support access controls.\n"
             "Please recompile with --enable-access-control.\n");
 #endif                          /* ACCESS_CONTROL */
+}
+
+static void c_set_cgi_strip_token(char *v1, char *v2, void *t)
+{
+    cgi_strip_add_token(v1);
+    if (!cgi_strip_prefix) {
+        log_error_time();
+        fprintf(stderr,
+                "Warning: CGIStripToken \"%s\" added but CGIStripPrefix is not yet enabled at this point.\n",
+                v1);
+    }
 }
 
 struct ccommand *lookup_keyword(char *c)

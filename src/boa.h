@@ -202,6 +202,12 @@ void release_mmap(struct mmap_entry *e);
 int open_gen_fd(char *spec);
 int process_cgi_header(request * req);
 
+/* cgi_header.c — CGI strip prefix */
+void cgi_strip_init(void);
+void cgi_strip_add_token(const char *token);
+void cgi_strip_cleanup(void);
+char *strip_cgi_prefix(char *buf);
+
 /* pipe */
 int read_from_pipe(request * req);
 int write_from_pipe(request * req);

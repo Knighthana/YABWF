@@ -21,6 +21,275 @@
 
 #include "boa.h"
 
+/* CGI strip prefix globals */
+int cgi_strip_prefix = 0;           /* CGIStripPrefix: 0=off, 1=on */
+char **cgi_strip_tokens = NULL;     /* dynamic token array */
+int cgi_strip_token_count = 0;      /* number of tokens */
+
+/* Built-in default CGI header tokens */
+static const char *cgi_strip_builtin[] = {
+    "Status:",
+    "Location:",
+    "Content-Type:",
+    "Set-Cookie:",
+    "Content-Length:",
+    "Cache-Control:",
+    "Connection:",
+    "WWW-Authenticate:",
+    "Expires:",
+    "Pragma:",
+    "Content-Encoding:",
+    "Content-Language:",
+    "Content-Disposition:",
+    "Last-Modified:",
+    "ETag:",
+    "Vary:",
+    "Allow:",
+    NULL
+};
+
+void cgi_strip_add_token(const char *token)
+{
+    cgi_strip_tokens = realloc(cgi_strip_tokens,
+                               (cgi_strip_token_count + 1) * sizeof(char *));
+    if (cgi_strip_tokens == NULL) {
+        DIE("memory allocation failure in cgi_strip_add_token");
+    }
+    cgi_strip_tokens[cgi_strip_token_count] = strdup(token);
+    if (cgi_strip_tokens[cgi_strip_token_count] == NULL) {
+        DIE("memory allocation failure in cgi_strip_add_token");
+    }
+    cgi_strip_token_count++;
+}
+
+/*
+ * Check if a string starts with a valid wildcard HTTP token pattern:
+ *   ^[A-Za-z][A-Za-z0-9-]*:
+ * Matches custom / extension headers like "X-Custom-Header:", "Sec-WebSocket-Key:", etc.
+ */
+static int matches_wildcard_pattern(const char *line)
+{
+    const char *p = line;
+
+    /* First character must be alpha */
+    if (!((*p >= 'A' && *p <= 'Z') || (*p >= 'a' && *p <= 'z')))
+        return 0;
+    p++;
+
+    /* Subsequent characters: alphanumeric or hyphen */
+    while (*p && (isalnum((unsigned char)*p) || *p == '-'))
+        p++;
+
+    /* Must be followed by ": " */
+    return (*p == ':' && *(p + 1) == ' ');
+}
+
+void cgi_strip_init(void)
+{
+    int i;
+
+    /*
+     * NOTE: Memory overhead is ~1-2 KB for the builtin token array
+     * (17 tokens × ~20 bytes avg = ~340 bytes for strings plus
+     *  pointer array).  Once built, runtime scan overhead is zero —
+     *  only pointer dereferences and strncasecmp calls.
+     */
+    for (i = 0; cgi_strip_builtin[i] != NULL; i++) {
+        cgi_strip_add_token(cgi_strip_builtin[i]);
+    }
+}
+
+void cgi_strip_cleanup(void)
+{
+    int i;
+    for (i = 0; i < cgi_strip_token_count; i++) {
+        free(cgi_strip_tokens[i]);
+    }
+    free(cgi_strip_tokens);
+    cgi_strip_tokens = NULL;
+    cgi_strip_token_count = 0;
+}
+
+/*
+ * Scan backward from pos to find the start of the line ending right
+ * before pos.  Lines are delimited by '\n' or buffer start.  Trailing
+ * '\r' / '\n' characters (line endings) are skipped before looking
+ * for the delimiter.
+ */
+static char *find_line_start(char *buf, char *pos)
+{
+    char *p;
+
+    if (pos <= buf)
+        return buf;
+
+    /* Skip past any trailing CR/LF at the end of the line */
+    p = pos;
+    while (p > buf && (*(p - 1) == '\n' || *(p - 1) == '\r'))
+        p--;
+
+    if (p == buf)
+        return buf;
+
+    /* Now find the last '\n' before the content */
+    p = p - 1;
+    while (p > buf && *p != '\n')
+        p--;
+
+    return (*p == '\n') ? p + 1 : buf;
+}
+
+/*
+ * Strip garbage prefix from CGI output before valid HTTP headers.
+ * Returns pointer to the start of valid header content.
+ * If nothing to strip, returns original buf.
+ */
+char *strip_cgi_prefix(char *buf)
+{
+    char *anchor, *pos;
+
+    if (!cgi_strip_prefix)
+        return buf;
+
+    /*
+     * Locate \n\n, \n\r\n, or \r\n\r\n — check \n\r\n first (consistent
+     * with process_cgi_header), then \n\n, then \r\n\r\n as fallback.
+     */
+    anchor = strstr(buf, "\n\r\n");
+    if (anchor == NULL) {
+        anchor = strstr(buf, "\n\n");
+    } else {
+        /* \n\r\n found; also check if \n\n appears earlier */
+        char *p = strstr(buf, "\n\n");
+        if (p && p < anchor)
+            anchor = p;
+    }
+    if (anchor == NULL) {
+        anchor = strstr(buf, "\r\n\r\n");
+        if (anchor == NULL)
+            return buf;         /* let existing logic report 502 */
+    }
+
+    pos = anchor;               /* pos points to first char of separator */
+
+    while (1) {
+        char *line_start;
+        int i;
+        int found_match = 0;
+
+        line_start = find_line_start(buf, pos);
+
+        /* Check if this line starts with a whitelist token */
+        for (i = 0; i < cgi_strip_token_count; i++) {
+            size_t token_len = strlen(cgi_strip_tokens[i]);
+            if (strncasecmp(line_start, cgi_strip_tokens[i],
+                            token_len) == 0) {
+                found_match = 1;
+                break;
+            }
+        }
+
+        /* If no builtin token matched, try the wildcard pattern */
+        if (!found_match && matches_wildcard_pattern(line_start)) {
+            found_match = 1;
+        }
+
+        if (found_match) {
+            /* This line is a valid header line */
+            if (line_start == buf) {
+                /* Reached beginning and all lines matched — nothing to strip */
+                return buf;
+            }
+            /*
+             * Continue scanning backwards.
+             * Note: 'pos = line_start' is equivalent to 'pos = line_start - 1'
+             * from the design document — find_line_start() skips trailing CR/LF
+             * before searching for the previous '\n', so both produce the same
+             * previous-line start pointer.
+             */
+            pos = line_start;
+            continue;
+        }
+
+        /* Line does not start with a whitelist token */
+        {
+            char *last_token = NULL;
+            char *strip_boundary;
+
+            /* Search for the last whitelist token within [line_start, pos) */
+            for (i = 0; i < cgi_strip_token_count; i++) {
+                size_t token_len = strlen(cgi_strip_tokens[i]);
+                char *scan;
+
+                for (scan = line_start; scan + token_len <= pos; scan++) {
+                    if (strncasecmp(scan, cgi_strip_tokens[i],
+                                    token_len) == 0) {
+                        last_token = scan;
+                    }
+                }
+            }
+
+            /* Also search for wildcard pattern matches within the line */
+            {
+                char *scan;
+                for (scan = line_start; scan + 2 <= pos; scan++) {
+                    if (matches_wildcard_pattern(scan)) {
+                        last_token = scan;
+                    }
+                }
+            }
+
+            if (last_token != NULL) {
+                /* Token found within the line — header starts at token pos */
+                strip_boundary = last_token;
+            } else {
+                /* No token found — header starts at the beginning of the
+                 * previously validated line (which is line_start if this is
+                 * the first iteration, or the last valid line otherwise) */
+                strip_boundary = pos;
+            }
+
+            /* Log the stripped content */
+            if (strip_boundary > buf) {
+                char strip_log[LOG_SANITIZE_BUF_SIZE];
+                size_t strip_len = strip_boundary - buf;
+                size_t copy_len = (strip_len < sizeof(strip_log) - 1)
+                    ? strip_len : sizeof(strip_log) - 1;
+
+                memcpy(strip_log, buf, copy_len);
+                strip_log[copy_len] = '\0';
+
+                /*
+                 * Write strip notice to CGI log (cgi_log_fd).
+                 * Fall back to stderr if CGI log is not configured (fd == 0).
+                 */
+                if (cgi_log_fd) {
+                    char logmsg[LOG_SANITIZE_BUF_SIZE + 64];
+                    int n = snprintf(logmsg, sizeof(logmsg),
+                                     "[CGI STRIP] stripped %zu byte(s): \"%s\"\n",
+                                     strip_len,
+                                     sanitize_log_string(strip_log));
+                    if (n > 0) {
+                        size_t write_len = ((size_t) n < sizeof(logmsg))
+                            ? (size_t) n : sizeof(logmsg) - 1;
+                        if (write(cgi_log_fd, logmsg, write_len) < 0) {
+                            /* write failure — silently ignore; CGI log is
+                             * best-effort and a failed write should not
+                             * disrupt request processing */
+                        }
+                    }
+                } else {
+                    fprintf(stderr,
+                            "[CGI STRIP] stripped %zu byte(s): \"%s\"\n",
+                            strip_len, sanitize_log_string(strip_log));
+                }
+            }
+
+            return strip_boundary;
+        }
+    }
+}
+
 /* process_cgi_header
 
 * returns 0 -=> error or HEAD, close down.
@@ -57,6 +326,15 @@ int process_cgi_header(request * req)
         req->cgi_status = CGI_BUFFER;
 
     buf = req->header_line;
+
+    if (cgi_strip_prefix && req->cgi_type != NPH) {
+        char *stripped = strip_cgi_prefix(buf);
+        if (stripped != buf) {
+            /* garbage was stripped and logged; adjust header_line */
+            req->header_line = stripped;
+            buf = stripped;
+        }
+    }
 
     c = strstr(buf, "\n\r\n");
     if (c == NULL) {

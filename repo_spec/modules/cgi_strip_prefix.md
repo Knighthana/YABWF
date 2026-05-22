@@ -40,7 +40,7 @@ DEBUG: connecting to DB...Status: 200 OK\nContent-Type: text/html\n\n<html>...
 1. 定位 HTTP 头-体分隔符 `\n\n`（锚点）
 2. 从锚点向前扫描，使用 **token 白名单 + 行格式** 双重匹配确定头块起点
 3. 丢弃起点之前的所有内容
-4. 丢弃的内容写入 CGI 日志（`CgiLog` 配置项），标注 `[CGI STRIP]`
+4. 丢弃的内容写入 CGI 日志（`CgiLog` 配置项），标注 `[CGI STRIP]`。若 `cgi_log_fd` 为 0（未配置 CGI 日志），fallback 到 `stderr`（即错误日志）
 5. 从起点开始正常解析 HTTP 响应
 
 # 配置项
