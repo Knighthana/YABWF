@@ -19,7 +19,9 @@ YABWF 面向嵌入式/内网场景，不适用于公开互联网部署。
 | CVE-2017-9833 | ⬜ 不适用 | **DISPUTED** — `/cgi-bin/wapopen` 为系统集成商代码，Boa 上游不含此程序 |
 | CVE-2019-7384 | ⬜ 不适用 | Raisecom GPON 厂商定制 CGI handler，YABWF 无此路径 |
 | CVE-2019-9976 | ✅ 基线已安全 | POST 临时文件使用 `mkstemp` + `unlink`，不持久化 |
+| CVE-2021-33558 | ⬜ 不适用 | **DISPUTED** — `backup.html`/`log.html` 等文件非 Boa 组成部分，站点配置问题 |
 | CVE-2021-35395 | ⬜ 不适用 | Realtek SDK 厂商定制 CGI handler，YABWF 无此路径 |
+| CVE-2022-45956 | ✅ 已修复（0.0.2） | HEAD 方法绕过 Allow/Deny — 在 `process_header_end()` 中添加统一 `access_allow()` 检查 |
 | CVE-2023-7208 | ⬜ 不适用 | Totolink 厂商定制 CGI handler，YABWF 无此路径 |
 | CVE-2024-40088 | ⬜ 不适用 | Vilo 5 Mesh WiFi 厂商设备固件，非上游 Boa |
 | CVE-2025-7909 | ⬜ 不适用 | D-Link DIR-513 厂商定制 CGI handler（**EOL 设备，Unsupported When Assigned**） |
@@ -41,7 +43,6 @@ YABWF 面向嵌入式/内网场景，不适用于公开互联网部署。
 | CVE | CVSS | 审查重点 |
 |-----|------|---------|
 | CVE-2018-21028 | 7.5 HIGH | 内存泄漏 — 缺少 `free()` 调用 |
-| CVE-2022-45956 | 5.3 MEDIUM | HEAD 方法绕过 Basic Authorization |
 | CVE-2024-47916 | 7.5 HIGH | 路径穿越 CWE-22（细节未公开，与 CVE-2000-0920 同类） |
 
 详见 `work_memo/STATES.md` T-003。

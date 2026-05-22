@@ -23,6 +23,7 @@
 /* $Id: request.c,v 1.112.2.51 2005/02/22 14:11:29 jnelson Exp $*/
 
 #include "boa.h"
+#include "access.h"
 #include <stddef.h>             /* for offsetof */
 
 #define TUNE_SNDBUF
@@ -853,6 +854,17 @@ int process_header_end(request * req)
         SQUASH_KA(req);
         return 0;               /* failure, close down */
     }
+
+#ifdef ACCESS_CONTROL
+    /* CVE-2022-45956: ensure access control applies to all methods
+     * including HEAD and CGI, not just GET in init_get() */
+    if (req->pathname && !access_allow(req->pathname)) {
+        log_error_doc(req);
+        fprintf(stderr, "Access denied for URI: %s\n", req->request_uri);
+        send_r_forbidden(req);
+        return 0;
+    }
+#endif
 
     if (req->method == M_POST) {
         req->post_data_fd = create_temporary_file(1, NULL, 0);
