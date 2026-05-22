@@ -763,9 +763,13 @@ void parse_debug(char *foo)
  * @brief Replaces control characters in a string with '?' placeholders.
  * Replaces control characters (0x00-0x1F except \\t=0x09,
  * and 0x7F DEL) in a string with '?' placeholders for safe logging.
- * Uses a 2KB static internal buffer; returns a safe copy of the input.
- * Input NULL returns "(null)". If the input exceeds the buffer capacity,
+ * Uses a static internal buffer (size defined by LOG_SANITIZE_BUF_SIZE
+ * in defines.h, default 2048). If the input exceeds the buffer capacity,
  * the output is truncated and "..." is appended.
+ *
+ * String longer than LOG_SANITIZE_BUF_SIZE will be truncated; it's the
+ * responsibility of the operator to ensure the chosen buffer size is
+ * adequate for log output.
  *
  * CVE-2009-4496: prevent log injection via control characters.
  * @param str Input string to sanitize.
@@ -773,7 +777,7 @@ void parse_debug(char *foo)
  */
 const char *sanitize_log_string(const char *str)
 {
-    static char buf[2048];
+    static char buf[LOG_SANITIZE_BUF_SIZE];
     const char *p;
     char *q;
     size_t len;

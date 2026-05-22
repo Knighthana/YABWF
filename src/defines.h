@@ -55,6 +55,7 @@
 #define CLIENT_STREAM_SIZE                      8192
 #define BUFFER_SIZE                             4096
 #define MAX_HEADER_LENGTH			1024
+#define LOG_SANITIZE_BUF_SIZE			2048 /* buffer for sanitize_log_string() */
 
 #define MIME_HASHTABLE_SIZE			47
 #define ALIAS_HASHTABLE_SIZE                    17

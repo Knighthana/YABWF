@@ -34,6 +34,7 @@ last_update: 2026-05-23
 | `BUFFER_SIZE` | 4096 | 每连接输出缓冲区 |
 | `CLIENT_STREAM_SIZE` | 8192 | 客户端输入流缓冲区 |
 | `MAX_HEADER_LENGTH` | 1024 | HTTP 头最大长度 |
+| `LOG_SANITIZE_BUF_SIZE` | 2048 | sanitize_log_string 缓冲区（字节），超长日志将截断 |
 | `REQUEST_TIMEOUT` | 60 | 请求超时（秒） |
 | `MMAP_LIST_SIZE` | 256 | mmap 缓存条目数 |
 | `MAX_FILE_MMAP` | 102400 | mmap 文件最大字节数（0=始终mmap） |
