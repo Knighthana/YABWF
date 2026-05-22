@@ -80,7 +80,7 @@
 #endif
 
 #ifndef SERVER_VERSION
-#define SERVER_VERSION 				"YABWF/0.0.1"
+#define SERVER_VERSION 				"YABWF/0.0.2"
 #endif
 
 #define CGI_VERSION				"CGI/1.1"
