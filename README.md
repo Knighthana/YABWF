@@ -43,33 +43,24 @@ Thanks to Larry Doolittle and Jon Nelson and other generous good people for crea
 
 ### 已提前告知信息安全问题
 
-请注意，已经有报告指出Boa服务器存在一些**安全漏洞**
+请注意，已经有报告指出Boa服务器存在一些**安全漏洞**。以下为YABWF对各CVE的处理状态：
 
-> CVE-2023-7208
->
-> CVE-2021-35395
->
-> CVE-2019-9976
->
-> CVE-2019-7384
->
-> CVE-2016-9564
->
-> CVE-2009-4496
->
-> CVE-2007-4915
->
-> CVE-2005-0864
->
-> CVE-2000-0920
+| CVE | 状态 | 说明 |
+|-----|------|------|
+| CVE-2009-4496 | ✅ 已修复（0.0.2） | 日志控制字符过滤（`sanitize_log_string`） |
+| CVE-2019-9976 | ✅ 基线已安全 | POST 临时文件使用 `mkstemp` + `unlink`，不持久化 |
+| CVE-2000-0920 | ✅ 基线已安全 | `clean_pathname` 阻断了 `%2E` 目录穿越 |
+| CVE-2005-0864 | ✅ 基线已安全 | `boa_atoi` 拒绝负值 Content-Length |
+| CVE-2016-9564 | ✅ 基线已安全 | 未发现 use-after-free 路径 |
+| CVE-2007-4915 | ⬜ 不适用 | Intersil isl3893 厂商扩展代码，YABWF 无此路径 |
+| CVE-2019-7384 | ⬜ 不适用 | Raisecom GPON 厂商定制 CGI handler，YABWF 无此路径 |
+| CVE-2021-35395 | ⬜ 不适用 | Realtek SDK 厂商定制 CGI handler，YABWF 无此路径 |
+| CVE-2023-7208 | ⬜ 不适用 | Totolink 厂商定制 CGI handler，YABWF 无此路径 |
 
-本项目目前**没有**对这些漏洞进行修复，因此请不要在公开服务器上使用本项目
+详细分析见 `user_memo/future/CVE_ANALYSIS.md`。
 
-对此已经提前告知，若有造成损失概不负责
-
-*目前暂时还没有修复这些漏洞的计划，但是如果有时间的话会出于兴趣对照CVE进行漏洞修复工作*
-
-*但这也不代表那时修复后的`yabwf`是绝对安全的*
+尽管上述 CVE 已处理，YABWF 仍然是一个面向嵌入式/内网场景的轻量服务器，
+请在公开服务器上使用时自行评估风险。对此已经提前告知，若有造成损失概不负责。
 
 ### 若继续则默认为赞同免责声明
 

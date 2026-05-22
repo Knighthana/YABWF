@@ -301,7 +301,7 @@ static void fixup_server_root()
             exit(EXIT_FAILURE);
         }
 #else
-        fputs("boa: don't know where server root is.  Please #define "
+        fputs("yabwf: don't know where server root is.  Please #define "
               "SERVER_ROOT in boa.h\n"
               "and recompile, or use the -c command line option to "
               "specify it.\n", stderr);

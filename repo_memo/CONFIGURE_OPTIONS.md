@@ -15,6 +15,7 @@ last_update: 2026-05-23
 |------|--------|------|
 | `--enable-log-color` | yes | ANSI 颜色码（仅在 isatty 时生效） |
 | `--enable-access-control` | no | Allow/Deny 访问控制 |
+| `--enable-cgi-strip-prefix` | no | CGI 输出前缀剥离（自动丢弃 HTTP 头前的调试输出） |
 | `--disable-gunzip` | (gunzip检测) | 禁用 gunzip 压缩支持 |
 | `--disable-sendfile` | (Linux检测) | 禁用 sendfile 系统调用 |
 | `--disable-debug` | no | 禁用调试日志 |

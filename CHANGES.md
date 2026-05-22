@@ -1,11 +1,14 @@
 ** Changes in YABWF 0.0.2 (2026-05-23)
- * 建立 Doc/SPEC/TEST 文档基础设施
+ * 建立 Doc/SPEC/TEST 文档基础设施（repo_spec/ repo_test/ test/）
  * 修复 CVE-2009-4496: 日志控制字符过滤（sanitize_log_string）
  * 确认 CVE-2019-9976 / 2000-0920 / 2005-0864 / 2016-9564 已在基线中修复
  * 归档厂商专属 CVE: 2007-4915 / 2019-7384 / 2021-35395 / 2023-7208
  * cgi_header.c: Location 头仅接受 http:// 和 https:// URL，拒绝绝对路径
  * hash.c: 明确 four_char_hash 运算符优先级
  * get_commonlog_time: ENABLE_LOG_COLOR 编译选项 + isatty 运行时检测
+ * 新增 CGIStripPrefix 功能（可选编译），自动剥离 CGI 调试输出
+ * defines.h: 新增 LOG_SANITIZE_BUF_SIZE（默认 2048），用户可按需调整
+ * 新增 CONTRIBUTING.md、CONFIGURE_OPTIONS.md 等文档
  * 更新 config.sub (2003→2025) 和 config.guess (2003→2021) 支持新架构
  * construct.sh 新增 verify-cross 子命令
  * generator_clangd.sh 改为生成 compile_commands.json
