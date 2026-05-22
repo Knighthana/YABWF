@@ -35,3 +35,4 @@
 # I suggest that to use the `generator_clangd.sh` to generate it on each machine
 .clangd
 autom4te.cache/
+boa.stripped

@@ -1,3 +1,16 @@
+** Changes in YABWF 0.0.2 (2026-05-23)
+ * 建立 Doc/SPEC/TEST 文档基础设施
+ * 修复 CVE-2009-4496: 日志控制字符过滤（sanitize_log_string）
+ * 确认 CVE-2019-9976 / 2000-0920 / 2005-0864 / 2016-9564 已在基线中修复
+ * 归档厂商专属 CVE: 2007-4915 / 2019-7384 / 2021-35395 / 2023-7208
+ * cgi_header.c: Location 头仅接受 http:// 和 https:// URL，拒绝绝对路径
+ * hash.c: 明确 four_char_hash 运算符优先级
+ * get_commonlog_time: ENABLE_LOG_COLOR 编译选项 + isatty 运行时检测
+ * 更新 config.sub (2003→2025) 和 config.guess (2003→2021) 支持新架构
+ * construct.sh 新增 verify-cross 子命令
+ * generator_clangd.sh 改为生成 compile_commands.json
+ * 新增单元测试、集成测试、安全 PoC 测试套件
+
 ** Changes from boa 0.94.14 to yabwf 0.0.1
  * add function for env `LD_LIBRARY_PATH`
  * 增加了通过在`boa.conf`中设定`CGILdLibraryPath`向CGI程序传递`LD_LIBRARY_PATH`环境变量的功能
