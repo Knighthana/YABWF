@@ -5,6 +5,12 @@
  * systems that don't have them.
  */
 
+#ifdef STANDALONE_TEST
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdio.h>
+#endif
+
 #ifndef HAVE_STRSTR
 char *strstr(char *s1, char *s2)
 {                               /* from libiberty */

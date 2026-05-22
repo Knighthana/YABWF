@@ -58,3 +58,15 @@ repo_test/
 - 所有测试用例在提交前必须通过
 - 新增功能须同时添加对应层级的测试用例
 - 安全测试用例在引入新 CVE 修复时添加
+
+## CVE 测试覆盖
+
+| CVE | 测试文件 | 层级 | 验证内容 |
+|-----|---------|------|---------|
+| CVE-2009-4496 | `test/unit/test_sanitize_log_string.c` `test/security/test_poc_sanitize_log_string.sh` | 单元+安全 | 控制字符过滤正确性 |
+| CVE-2000-0920 | — | 审查 | `clean_pathname` 防御链（已确认） |
+| CVE-2022-45956 | `test/integration/test_cve_2022_45956.sh` | 集成 | HEAD 方法尊重 Allow/Deny 规则 |
+| CVE-2018-21028 | `test/unit/test_strstr_fallback.c` | 单元 | `strstr` fallback 正确性 |
+| CGI Location | `test/unit/test_cgi_header_location.c` `test/security/test_poc_cgi_header_location.sh` | 单元+安全 | Location 头安全拒绝 |
+| CGI Strip | `test/unit/test_cgi_strip_prefix.c` `test/integration/test_cgi_strip_prefix.sh` | 单元+集成 | 前缀剥离功能正确性 |
+| Cross-compile | `test/integration/test_verify_cross.sh` | 集成 | 交叉编译验证 |

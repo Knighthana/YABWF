@@ -112,6 +112,36 @@ fi
 echo ""
 
 # ============================================================
+# 8. Integration test: CVE-2022-45956 HEAD access control
+# ============================================================
+echo "--- [8/9] Integration Test: CVE-2022-45956 ---"
+if ./test/integration/test_cve_2022_45956.sh 2>&1; then
+    echo ">>> PASS: CVE-2022-45956 integration test"
+else
+    echo ">>> FAIL: CVE-2022-45956 integration test"
+    ANY_FAIL=1
+fi
+echo ""
+
+# ============================================================
+# 9. Unit test: strstr fallback
+# ============================================================
+echo "--- [9/9] Unit Test: strstr fallback ---"
+if gcc -Wall -Wextra -std=c99 -fno-builtin-strstr \
+       -include stddef.h -include stdlib.h \
+       -Wno-implicit-function-declaration \
+       -DSTANDALONE_TEST -I./src \
+       -o /tmp/test_strstr_fallback \
+       extras/strutil.c test/unit/test_strstr_fallback.c 2>&1 &&
+   /tmp/test_strstr_fallback; then
+    echo ">>> PASS: strstr fallback unit test"
+else
+    echo ">>> FAIL: strstr fallback unit test"
+    ANY_FAIL=1
+fi
+echo ""
+
+# ============================================================
 # Summary
 # ============================================================
 echo "============================================"
