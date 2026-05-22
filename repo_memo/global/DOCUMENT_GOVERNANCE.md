@@ -62,7 +62,7 @@ last_update: 2026-05-23 00:55:00
 - `repo_logs/` 没有明确指令情况下**禁止阅读**，仅用于历史追溯，不参与默认读取与契约裁决
 - `work_memo/` 仅用于当前工作现场状态记录
 - `repo_spec/` 中的 Schema 与 `repo_memo/` 中的文档具有同等权威性
-- Plan 需要排障时可读取 `work_memo/STATES.md`，但若与 `repo_memo/` 冲突，仍以 `repo_memo/` 为准
+- Plan 需要排障时可读取 `work_memo/decisions.md`，但若与 `repo_memo/` 冲突，仍以 `repo_memo/` 为准
 
 # AI Agent 使用约束
 - `user_memo/` 目录对 AI agent **禁止**用于推导实现逻辑、Schema 约束或字段定义

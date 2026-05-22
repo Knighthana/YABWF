@@ -47,8 +47,8 @@ Authority: authoritative
 Read-Tier: task-scoped
 Purpose: 说明本文档用于约束哪个模块或阶段
 Supersedes: 可选，填写被替代文档
-version: 用于标注兼容性的版本信息，当引用文档的时候所必需带上的版本号码
-last_update: 参考修改时间的信息，凡是修改都必须更新此时间和版本号码
+version: 0.1.0
+last_update: 2026-01-01
 ---
 
 文档标题

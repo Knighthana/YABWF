@@ -47,6 +47,29 @@ clean()
     cd $PROJECT_PATH
     make distclean
 }
+# verify-cross func
+verify_cross()
+{
+    cd $PROJECT_PATH
+    make clean 2>/dev/null
+    echo "verify-cross: configuring with --host=$HOST CC=$CC"
+    if ! ./configure --build=$BUILDMACHINE --host=$HOST CC=$CC; then
+        echo "verify-cross: configure failed for host=$HOST CC=$CC" >&2
+        exit 1
+    fi
+    echo "verify-cross: building with -j$CPUTHREAD"
+    if ! make -j$CPUTHREAD -C src; then
+        echo "verify-cross: make failed for host=$HOST" >&2
+        exit 1
+    fi
+    echo "verify-cross: SUCCESS for host=$HOST"
+    for bin in src/boa src/boa_indexer; do
+        if [ -f "$bin" ]; then
+            size=$(stat --format="%s" "$bin" 2>/dev/null || stat -f"%z" "$bin" 2>/dev/null)
+            echo "  artifact: $bin ($size bytes)"
+        fi
+    done
+}
 # build func
 build()
 {
@@ -67,10 +90,13 @@ else
         build;
     elif [ "$1" = "clean" ]; then
         clean
+    elif [ "$1" = "verify-cross" ]; then
+        verify_cross
     else
         echo "\"$1\" option is not supported"
         echo "supporting options:"
         echo " build -- build the project"
         echo " clean -- clean the project and output"
+        echo " verify-cross -- cross-compilation verification (set HOST and CC env vars)"
     fi
 fi

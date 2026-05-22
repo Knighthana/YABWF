@@ -164,6 +164,7 @@ void sigterm_stage2_run(void);
 /* util.c */
 void clean_pathname(char *pathname);
 char *get_commonlog_time(void);
+const char *sanitize_log_string(const char *str);
 void rfc822_time_buf(char *buf, time_t s);
 char *simple_itoa(unsigned int i);
 int boa_atoi(const char *s);

@@ -91,27 +91,15 @@ int process_cgi_header(request * req)
 #endif
 
 
-        if (buf[10] == '/') {   /* virtual path */
+        if (buf[10] == '/') {   /* absolute path (potential directory traversal) */
             log_error_doc(req);
             fprintf(stderr,
-                    "server does not support internal redirection: "
-                    "\"%s\"\n", buf + 10);
+                    "SECURITY: Location header with absolute path rejected: "
+                    "\"%s\" — only http:// and https:// URLs are allowed\n",
+                    buf + 10);
             send_r_bad_request(req);
-
-            /*
-             * We (I, Jon) have declined to support absolute-path parsing
-             * because I see it as a major security hole.
-             * Location: /etc/passwd or Location: /etc/shadow is not funny.
-             *
-             * Also, the below code is borked.
-             * request_uri could contain /cgi-bin/bob/extra_path
-             */
-
-            /*
-               strcpy(req->request_uri, buf + 10);
-               return internal_redirect(req);
-             */
-        } else {                /* URL */
+        } else if (strncasecmp(buf + 10, "http://", 7) == 0 ||
+                   strncasecmp(buf + 10, "https://", 8) == 0) {  /* valid URL */
             char *c2;
             c2 = strchr(buf + 10, '\n');
             /* c2 cannot ever equal NULL here because we already have found one */
@@ -130,6 +118,13 @@ int process_cgi_header(request * req)
                 send_r_moved_temp(req, buf + 10, "");
             else
                 send_r_moved_temp(req, buf + 10, c2);
+        } else {                /* non-URL Location value (rejected) */
+            log_error_doc(req);
+            fprintf(stderr,
+                    "SECURITY: Location header with non-URL value rejected: "
+                    "\"%s\" — only http:// and https:// URLs are allowed\n",
+                    buf + 10);
+            send_r_bad_request(req);
         }
         req->status = DONE;
         return 1;
