@@ -128,14 +128,14 @@ char *new_clean_pathname(char *pathname)
 #endif
 
 /**
- * @brief string out put as format like
- * "[2023-11-17 17:57:49 Fri] "
+ * @brief Returns a formatted timestamp string for log entries.
  *
- * updatecomment: replaced the previous function
- * date: 2023-11-17
- * updator: Knighthana
- * this used too much sprintf format, might be slower?
- * any improve suggestion sendto (https://github.com/Knighthana/YABWF)
+ * When ENABLE_LOG_COLOR is defined and stderr is a terminal (isatty),
+ * the output includes ANSI color codes: cyan for date, green for time,
+ * blue for weekday. Otherwise, plain text is used to avoid control
+ * character pollution when writing to pipes or files.
+ *
+ * @return Pointer to a static buffer containing the formatted timestamp.
  */
 char *get_commonlog_time(void)
 {
@@ -155,8 +155,21 @@ char *get_commonlog_time(void)
     else{
         lc = gmtime(&cur);
     }
-    
-    sprintf(timestring, "[\e[36m%4d-%02d-%02d \e[32m%02d:%02d:%02d \e[34m%s\e[0m] ", lc->tm_year + 1900, lc->tm_mon + 1, lc->tm_mday, lc->tm_hour, lc->tm_min, lc->tm_sec, wday_tab[lc->tm_wday]);
+
+#ifdef ENABLE_LOG_COLOR
+    if (isatty(STDERR_FILENO)) {
+        sprintf(timestring, "[\e[36m%4d-%02d-%02d \e[32m%02d:%02d:%02d \e[34m%s\e[0m] ",
+                lc->tm_year + 1900, lc->tm_mon + 1, lc->tm_mday,
+                lc->tm_hour, lc->tm_min, lc->tm_sec,
+                wday_tab[lc->tm_wday]);
+    } else
+#endif
+    {
+        sprintf(timestring, "[%4d-%02d-%02d %02d:%02d:%02d %s] ",
+                lc->tm_year + 1900, lc->tm_mon + 1, lc->tm_mday,
+                lc->tm_hour, lc->tm_min, lc->tm_sec,
+                wday_tab[lc->tm_wday]);
+    }
     return timestring;
 }
 
@@ -745,3 +758,44 @@ void parse_debug(char *foo)
             debug_level);
 }
 #endif
+
+/**
+ * @brief Replaces control characters in a string with '?' placeholders.
+ * Replaces control characters (0x00-0x1F except \\t=0x09,
+ * and 0x7F DEL) in a string with '?' placeholders for safe logging.
+ * Uses a static internal buffer; returns a safe copy of the input.
+ * Input NULL returns "(null)".
+ *
+ * CVE-2009-4496: prevent log injection via control characters.
+ * @param str Input string to sanitize.
+ * @return Pointer to a static buffer with sanitized content.
+ */
+const char *sanitize_log_string(const char *str)
+{
+    static char buf[8192];
+    const char *p;
+    char *q;
+    size_t len;
+
+    if (str == NULL)
+        return "(null)";
+
+    p = str;
+    q = buf;
+    len = 0;
+
+    while (*p && len < sizeof(buf) - 1) {
+        unsigned char c = (unsigned char) *p;
+        if ((c <= 0x1F && c != 0x09) || c == 0x7F) {
+            /* replace control character with '?' */
+            *q++ = '?';
+            len++;
+        } else {
+            *q++ = *p;
+            len++;
+        }
+        p++;
+    }
+    *q = '\0';
+    return buf;
+}

@@ -85,12 +85,18 @@ static unsigned boa_hash(const char *str)
 }
 
 #ifdef WANT_ICKY_HASH
+/**
+ * @brief Alternate hash variant, only active when WANT_ICKY_HASH
+ * is defined. Currently unused (default is FNV1a via _boa_hash).
+ * Parentheses added for clarity; the `+` operator has higher precedence
+ * than `?:`, so explicit parentheses ensure the intended grouping.
+ */
 static unsigned four_char_hash(const char *buf)
 {
     unsigned int hash = (buf[0] +
-                         (buf[1] ? buf[1] : 241 +
-                          (buf[2] ? buf[2] : 251 +
-                           (buf[3] ? buf[3] : 257))));
+                         (buf[1] ? buf[1] : (241 +
+                          (buf[2] ? buf[2] : (251 +
+                           (buf[3] ? buf[3] : 257))))));
     DEBUG(DEBUG_HASH) {
         log_error_time();
         fprintf(stderr, "four_char_hash(%s) = %u\n", buf, hash);
@@ -180,9 +186,8 @@ static unsigned fnv1a_hash(const char *str)
 #endif
 #endif
 
-/*
- * Name: hash_insert
- * Description: Adds a key/value pair to the provided hashtable
+/**
+ * @brief Adds a key/value pair to the provided hashtable.
  */
 
 static
@@ -267,9 +272,16 @@ hash_struct *hash_insert(hash_struct * table[], const unsigned int hash,
     return trailer;
 }
 
+/**
+ * @brief Finds a key/value pair in the provided hashtable.
+ * @param table The hash table to search.
+ * @param key The key to look up.
+ * @param hash The pre-computed hash value of the key.
+ * @return Pointer to the hash_struct if found, NULL otherwise.
+ */
 static
 hash_struct *hash_find(hash_struct * table[], const char *key,
-                          const unsigned int hash)
+                           const unsigned int hash)
 {
     hash_struct *current;
 
@@ -295,6 +307,11 @@ hash_struct *hash_find(hash_struct * table[], const char *key,
     return NULL;
 }
 
+/**
+ * @brief Clears all entries from a hash table.
+ * @param table The hash table to clear.
+ * @param size The number of buckets in the table.
+ */
 static
 void hash_clear(hash_struct * table[], int size)
 {
@@ -316,6 +333,9 @@ void hash_clear(hash_struct * table[], int size)
     }
 }
 
+/**
+ * @brief Prints hash table statistics to stderr.
+ */
 void hash_show_stats(void)
 {
     int i;
@@ -372,9 +392,10 @@ void hash_show_stats(void)
 /*******************************************************************/
 /*******************************************************************/
 
-/*
- * Name: add_mime_type
- * Description: Adds a key/value pair to the mime_hashtable
+/**
+ * @brief Adds a key/value pair to the mime_hashtable.
+ * @param extension File extension to use as key.
+ * @param type MIME type string as value.
  */
 
 void add_mime_type(const char *extension, const char *type)
@@ -386,11 +407,10 @@ void add_mime_type(const char *extension, const char *type)
 	DIE("Failed to hash_insert mime type.");
 }
 
-/*
- * Name: get_mime_hash_value
- *
- * Description: adds the ASCII values of the file extension letters
- * and mods by the hashtable size to get the hash value
+/**
+ * @brief Computes the hash value for a file extension.
+ * @param extension File extension string.
+ * @return Hash value mod MIME_HASHTABLE_SIZE.
  */
 
 unsigned get_mime_hash_value(const char *extension)
@@ -398,11 +418,11 @@ unsigned get_mime_hash_value(const char *extension)
     return boa_hash(extension) % MIME_HASHTABLE_SIZE;
 }
 
-/*
- * Name: get_mime_type
- *
- * Description: Returns the mime type for a supplied filename.
+/**
+ * @brief Returns the MIME type for a supplied filename.
  * Returns default type if not found.
+ * @param filename The filename to look up.
+ * @return MIME type string, or default_type if not found.
  */
 
 char *get_mime_type(const char *filename)
@@ -443,11 +463,10 @@ char *get_mime_type(const char *filename)
     return (current ? current->value : default_type);
 }
 
-/*
- * Name: get_homedir_hash_value
- *
- * Description: adds the ASCII values of the username letters
- * and mods by the hashtable size to get the hash value
+/**
+ * @brief Computes the hash value for a username.
+ * @param name Username string.
+ * @return Hash value mod PASSWD_HASHTABLE_SIZE.
  */
 
 static unsigned get_homedir_hash_value(const char *name)
@@ -456,12 +475,11 @@ static unsigned get_homedir_hash_value(const char *name)
 }
 
 
-/*
- * Name: get_home_dir
- *
- * Description: Returns a point to the supplied user's home directory.
+/**
+ * @brief Returns a pointer to the supplied user's home directory.
  * Adds to the hashtable if it's not already present.
- *
+ * @param name Username string.
+ * @return Home directory path, or NULL if not found.
  */
 
 char *get_home_dir(const char *name)
@@ -490,11 +508,17 @@ char *get_home_dir(const char *name)
     return (current ? current->value : NULL);
 }
 
+/**
+ * @brief Clears the MIME type hash table.
+ */
 void dump_mime(void)
 {
     hash_clear(mime_hashtable, MIME_HASHTABLE_SIZE);
 }
 
+/**
+ * @brief Clears the password hash table.
+ */
 void dump_passwd(void)
 {
     hash_clear(passwd_hashtable, PASSWD_HASHTABLE_SIZE);

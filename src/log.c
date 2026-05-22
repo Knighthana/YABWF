@@ -26,15 +26,12 @@
 
 int cgi_log_fd;
 
-/*
- * Name: open_logs
- *
- * Description: Opens access log, error log, and if specified, CGI log
+/**
+ * @brief Opens access log, error log, and if specified, CGI log.
  * Ties stderr to error log, except during CGI execution, at which
  * time CGI log is the stderr for CGIs.
  *
  * Access log is line buffered, error log is not buffered.
- *
  */
 
 void open_logs(void)
@@ -104,10 +101,8 @@ void open_logs(void)
 #endif
 }
 
-/*
- * Name: log_access
- *
- * Description: Writes log data to access_log.
+/**
+ * @brief Writes log data to access_log.
  */
 
 /* NOTES on the commonlog format:
@@ -144,30 +139,28 @@ void log_access(request * req)
     if (virtualhost) {
         printf("%s ", req->local_ip_addr);
     } else if (vhost_root) {
-        printf("%s ", (req->host ? req->host : "(null)"));
+        printf("%s ", sanitize_log_string(req->host ? req->host : "(null)"));
     }
     printf("%s - - %s\"%s\" %d %ld \"%s\" \"%s\"\n",
            req->remote_ip_addr,
            get_commonlog_time(),
-           req->logline ? req->logline : "-",
+           sanitize_log_string(req->logline ? req->logline : "-"),
            req->response_status,
            req->bytes_written,
-           (req->header_referer ? req->header_referer : "-"),
-           (req->header_user_agent ? req->header_user_agent : "-"));
+           sanitize_log_string(req->header_referer ? req->header_referer : "-"),
+           sanitize_log_string(req->header_user_agent ? req->header_user_agent : "-"));
 }
 
-/*
- * Name: log_error_doc
- *
- * Description: Logs the current time and transaction identification
+/**
+ * @brief Logs the current time and transaction identification
  * to the stderr (the error log):
  * should always be followed by an fprintf to stderr
  *
  * Example output:
- [08/Nov/1997:01:05:03 -0600] request from 192.228.331.232 "GET /~joeblow/dir/ HTTP/1.0" ("/usr/user1/joeblow/public_html/dir/"): write: Broken pipe
-
- Apache uses:
- [Wed Oct 11 14:32:52 2000] [error] [client 127.0.0.1] client denied by server configuration: /export/home/live/ap/htdocs/test
+ *  [08/Nov/1997:01:05:03 -0600] request from 192.228.331.232 "GET /~joeblow/dir/ HTTP/1.0" ("/usr/user1/joeblow/public_html/dir/"): write: Broken pipe
+ *
+ * Apache uses:
+ * [Wed Oct 11 14:32:52 2000] [error] [client 127.0.0.1] client denied by server configuration: /export/home/live/ap/htdocs/test
  */
 
 void log_error_doc(request * req)
@@ -177,31 +170,28 @@ void log_error_doc(request * req)
     if (virtualhost) {
         fprintf(stderr, "%s ", req->local_ip_addr);
     } else if (vhost_root) {
-        fprintf(stderr, "%s ", (req->host ? req->host : "(null)"));
+        fprintf(stderr, "%s ", sanitize_log_string(req->host ? req->host : "(null)"));
     }
     if (vhost_root) {
         fprintf(stderr, "%s - - %srequest [%s] \"%s\" (\"%s\"): ",
                 req->remote_ip_addr,
                 get_commonlog_time(),
-                (req->header_host ? req->header_host : "(null)"),
-                (req->logline ? req->logline : "(null)"),
-                (req->pathname ? req->pathname : "(null)"));
+                sanitize_log_string(req->header_host ? req->header_host : "(null)"),
+                sanitize_log_string(req->logline ? req->logline : "(null)"),
+                sanitize_log_string(req->pathname ? req->pathname : "(null)"));
     } else {
         fprintf(stderr, "%s - - %srequest \"%s\" (\"%s\"): ",
                 req->remote_ip_addr,
                 get_commonlog_time(),
-                (req->logline ? req->logline : "(null)"),
-                (req->pathname ? req->pathname : "(null)"));
+                sanitize_log_string(req->logline ? req->logline : "(null)"),
+                sanitize_log_string(req->pathname ? req->pathname : "(null)"));
     }
 
     errno = errno_save;
 }
 
-/*
- * Name: boa_perror
- *
- * Description: logs an error to user and error file both
- *
+/**
+ * @brief Logs an error to user and error file both.
  */
 void boa_perror(request * req, const char *message)
 {
@@ -210,10 +200,8 @@ void boa_perror(request * req, const char *message)
     send_r_error(req);
 }
 
-/*
- * Name: log_error_time
- *
- * Description: Logs the current time to the stderr (the error log):
+/**
+ * @brief Logs the current time to the stderr (the error log):
  * should always be followed by an fprintf to stderr
  */
 
@@ -224,11 +212,8 @@ void log_error_time(void)
     errno = errno_save;
 }
 
-/*
- * Name: log_error
- *
- * Description: performs a log_error_time and writes a message to stderr
- *
+/**
+ * @brief Performs a log_error_time and writes a message to stderr.
  */
 
 void log_error(const char *mesg)
